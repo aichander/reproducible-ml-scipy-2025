@@ -1,0 +1,38 @@
+[workspace]
+authors = ["Aishwarya Chander <aishwarya.chander@alleninstitute.org>"]
+channels = ["conda-forge", "bioconda"]
+name = "my-project"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[activation.env]
+MY_ENV_VAR = "Hello, Pixi!"
+
+[tasks]
+hello = 'echo "Hello, Pixi!"'
+greet = { cmd = 'echo "Hello, {{ name }}!"', args = ["name"] }
+greet-YOUR_NAME = [{ task = "greet", args = ["YOUR_NAME"] }]
+start = { args = ["name"], depends-on = [{ task = "hello" }, { task = "greet", args = ["{{ name }}"] }] }
+print-env = "echo $MY_ENV_VAR"
+
+[dependencies]
+python = ">=3.13.5,<3.14"
+scipy = "==1.15.1"
+numpy = ">=2.3.0,<3"
+fastqc = { version = ">=0.12.1,<0.13", channel = "bioconda" }
+pandas = ">=2.3.0,<3"
+
+[feature.test.pypi-dependencies]
+pytest = { git = "https://github.com/pytest-dev/pytest.git", tag = "8.3.1" }
+
+[feature.format.dependencies]
+ruff = "*"
+
+[feature.format.tasks]
+fmt = "ruff --version"
+
+[environments]
+test = { features = ["test"], solve-group = "group1" }
+format = { features = ["format"], no-default-feature = true }
+default = { solve-group = "group1" }
+
